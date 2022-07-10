@@ -1,8 +1,9 @@
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
+const path = require("path");
 const generateFileName = require("./generateFileName");
 const writeImage = require("./writeImage");
-const path = require("path");
+const deleteFiles = require("./deleteFiles");
 
 const client = new Client({ authStrategy: new LocalAuth() });
 
@@ -26,6 +27,8 @@ client.on("message", async (msg) => {
     );
 
     client.sendMessage(msg.from, sticker, { sendMediaAsSticker: true });
+
+    await deleteFiles(filename);
   }
 });
 
