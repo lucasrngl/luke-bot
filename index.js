@@ -1,5 +1,9 @@
 const qrcode = require("qrcode-terminal");
 const { Client, LocalAuth } = require("whatsapp-web.js");
+const nameToHex = require("./filename");
+const baseToImage = require("./baseToImage");
+const writeBase64 = require("./writeBase64");
+
 const client = new Client({ authStrategy: new LocalAuth() });
 
 // client.on("qr", (qr) => {
@@ -11,12 +15,13 @@ client.on("ready", () => {
 });
 
 client.on("message", async (msg) => {
-  console.log(`conteudo: ${msg.body}\ntipo: ${msg.type}`);
-  if (msg.type === "image") {
-    const msgData = msg;
-    const msgMedia = msg.downloadMedia();
-    console.log(msgData);
-    console.log(msgMedia);
+  if (!msg.isStatus && msg.type === "image") {
+    const media = await msg.downloadMedia();
+    const filename = nameToHex();
+
+    writeBase64(filename, media);
+
+    baseToImage(filename);
   }
 });
 
